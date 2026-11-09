@@ -54,8 +54,8 @@ python3 bin/wechat-wecom-monitor check --export-root /path/to/private-export --c
 
 ~~~sh
 # 每 10 分钟拉取微信新增消息（含 7200 秒回看窗口与状态去重）与企微增量事件
-python3 /path/to/wechat-wecom-monitor/wechat/wechat_hourly_check.py --since "$(cat /path/to/private-monitor/last_ts)" --lookback 7200
-python3 /path/to/wechat-wecom-monitor/wecom/wecom_hourly_check.py
+python3 /path/to/wechat-wecom-monitor/wechat/wechat_check.py --since "$(cat /path/to/private-monitor/last_ts)" --lookback 7200
+python3 /path/to/wechat-wecom-monitor/wecom/wecom_check.py
 ~~~
 
 ### 方式二：由系统 Cron 每 10 分钟运行内置独立规则分类与推送（脱离 Agent）

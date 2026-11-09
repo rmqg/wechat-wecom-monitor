@@ -146,7 +146,7 @@ def demo(output=None):
 
 
 def check_local(config, state_file=None, send_cmd=None, send_to=None, bark_url=None, dry_run=False):
-    spec = importlib.util.spec_from_file_location("monitor_local_wechat", ROOT / "wechat/wechat_hourly_check.py")
+    spec = importlib.util.spec_from_file_location("monitor_local_wechat", ROOT / "wechat/wechat_check.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     with tempfile.TemporaryDirectory(prefix="monitor-local-") as tmp:

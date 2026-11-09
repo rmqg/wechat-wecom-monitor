@@ -214,15 +214,15 @@ def test_install_config_unattended(tmp_path):
 
 
 def test_local_classifier_entrypoint(tmp_path):
-    spec = importlib.util.spec_from_file_location("local_collector_test", ROOT / "wechat/wechat_hourly_check.py")
+    spec = importlib.util.spec_from_file_location("local_collector_test", ROOT / "wechat/wechat_check.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert callable(module.collect_local)
-    assert "--classify" in subprocess.run([sys.executable, str(ROOT / "wechat/wechat_hourly_check.py"), "--help"], capture_output=True, text=True).stdout
+    assert "--classify" in subprocess.run([sys.executable, str(ROOT / "wechat/wechat_check.py"), "--help"], capture_output=True, text=True).stdout
 
 
 def test_local_collection_runs_shared_classification(config, monkeypatch):
-    spec = importlib.util.spec_from_file_location("synthetic_local_collector", ROOT / "wechat/wechat_hourly_check.py")
+    spec = importlib.util.spec_from_file_location("synthetic_local_collector", ROOT / "wechat/wechat_check.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     class SyntheticReader:

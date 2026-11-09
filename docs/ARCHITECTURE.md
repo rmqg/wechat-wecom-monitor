@@ -6,7 +6,7 @@
 
 1. **数据源（双轨支持）**：
    - **统一契约轨**：`wechat-export-send`、`wecom-export` 持续产出 `chat-export/v1` 目录；本工具读取 `manifest.json` 和会话 JSONL，自行维护消费水位。
-   - **原生直读轨**：由定时任务或智能体（Agent）**每 10 分钟**调用 `wechat/wechat_hourly_check.py`（只读解密微信本地库、合并主小号去重、提取 PDF/DOCX/XLSX/TXT 附件正文）与 `wecom/wecom_hourly_check.py`（SSH 拉取 Windows 企微采集器增量事件）。
+   - **原生直读轨**：由定时任务或智能体（Agent）**每 10 分钟**调用 `wechat/wechat_check.py`（只读解密微信本地库、合并主小号去重、提取 PDF/DOCX/XLSX/TXT 附件正文）与 `wecom/wecom_check.py`（SSH 拉取 Windows 企微采集器增量事件）。
 2. **分级判定（双模式支持）**：
    - **智能体（Agent）按手册判定模式（生产实测配置）**：定时智能体每 10 分钟读取新增消息 JSON，对照 `docs/monitor-manual-TEMPLATE.md` 的群分级（`P0/P1/P2/IGNORE`）、关键人名单与语境规则判定 `CALL / DIGEST / IGNORE` 并推送重要消息。
    - **内置独立规则模式（无需 Agent）**：`monitor_engine.py` 的 `classify_message(message, conversation, config)` 按 `docs/monitor-config-TEMPLATE.json` 确定性输出 `action` 与 `reason`。
@@ -19,7 +19,7 @@
 | monitor_engine.py | 配置、规则分类、统一导出检查与提醒协调 |
 | wechat/ | 微信本地库只读采集参考与独立分类接入 |
 | wecom/collector/ | Windows 企微本地采集与导出 |
-| wecom/wecom_hourly_check.py | 企微检查入口与分类接入 |
+| wecom/wecom_check.py | 企微检查入口与分类接入 |
 | digest-bot/ | 可选摘要与报告参考，不是核心分类器的必需依赖 |
 
 ## 失败边界

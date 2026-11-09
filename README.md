@@ -23,23 +23,23 @@ python3 bin/wechat-wecom-monitor check --export-root ./demo-output/wecom --dry-r
 ```text
 ┌────────────────────────┐   每 10 分钟 (*/10)       ┌──────────────────────────────┐
 │ wechat/ 或 chat-export │ ─────────────────────────▶│ 模式 A：定时智能体（Agent）   │
-│ wechat_hourly_check.py │  增量输出新增群聊/私聊     │ 按 monitor-manual-TEMPLATE   │
+│ wechat_check.py │  增量输出新增群聊/私聊     │ 按 monitor-manual-TEMPLATE   │
 │ (含 PDF/DOCX/XLSX 解析) │  及附件解析 JSON          │ 语义判定 CALL/DIGEST 后推送   │
 └────────────────────────┘                           ├──────────────────────────────┤
 ┌────────────────────────┐   events --after <id>     │ 模式 B：内置独立规则分类器    │
 │ wecom/collector/       │ ─────────────────────────▶│ monitor_engine / classify()  │
-│ wecom_hourly_check.py  │  每 10 分钟增量拉取企微    │ 脱离 Agent 直接判定并推送     │
+│ wecom_check.py  │  每 10 分钟增量拉取企微    │ 脱离 Agent 直接判定并推送     │
 └────────────────────────┘                           └──────────────────────────────┘
 ```
 
-本项目支持两种 **每 10 分钟增量巡检（`*/10 * * * *`）** 的运行模式：
+本项目在生产环境中以 **每 10 分钟增量巡检（`*/10 * * * *`）** 的方式运行：
 
-1. **定时智能体巡检模式（作者当前生产配置）**：
-   - 由远端或本机定时智能体（Scheduled Agent）**每 10 分钟**触发一次扫描，调用 `wechat/wechat_hourly_check.py --since <epoch> --lookback 7200` 与 `wecom/wecom_hourly_check.py`（或直接对 `chat-export/v1` 运行 `bin/wechat-wecom-monitor check`），拉取过去窗口内新增的群聊、私聊及解析出的文档附件正文。
-   - 智能体结合 [`docs/monitor-manual-TEMPLATE.md`](docs/monitor-manual-TEMPLATE.md)（定义了 `P0 / P1 / P2 / IGNORE` 四级群聊、关键联系人、权威发言人及语境规则）对新消息做上下文判断，筛选出真正需要打断本人的 **`CALL`**（立即强提醒）与 **`DIGEST`**（重要消息摘要），通过 Bark 或 `chat-send/v1` 推送重要消息，其余日常闲聊全部归入 `IGNORE`。
-2. **纯规则脱离 Agent 独立模式**：
-   - 不使用智能体时，可直接由系统 `cron` / `systemd timer` **每 10 分钟**运行内置的独立规则分类器（`monitor_engine.py` 的 `classify_message()`、`wechat_hourly_check.py --classify` 或 `wecom_hourly_check.py` 的 `classify()`）：
-
+1. **配合定时 Agent（muse）每 10 分钟扫描并推送重要消息（唯一实测过的生产配置）**：
+   - 由定时 Agent（作者生产环境使用 `muse`）**每 10 分钟**运行一次 `wechat/wechat_check.py --since <epoch> --lookback 7200` 与 `wecom/wecom_check.py`（或读取接口 1 `chat-export/v1`），拉取过去窗口内新增的群聊、私聊及解析出的 PDF/DOCX/XLSX/TXT 附件正文 JSON。
+   - 由 `muse` 结合 [`docs/monitor-manual-TEMPLATE.md`](docs/monitor-manual-TEMPLATE.md)（定义了 `P0 / P1 / P2 / IGNORE` 四级群聊、关键联系人、权威发言人及语境规则）对新消息做判定，筛选出 **`CALL`**（立即强提醒）与 **`DIGEST`**（重要消息摘要）并完成推送，其余日常闲聊全部归入 `IGNORE`。
+2. **脱离 Agent 或接入其他推送渠道（需自行二次开发）**：
+   - 本项目**未开发**将重要消息直接推送到 Bark 等外部通道的现成生产链路；微信侧 `wechat_check.py` 原生作为数据管道输出新增消息 JSON。
+   - 若希望脱离 Agent 纯代码运行或接入自己的推送方式，可参考 `wecom/wecom_check.py` 中的 `classify()`、仓库附带的规则引擎示例 `monitor_engine.py` 以及 [`docs/monitor-manual-TEMPLATE.md`](docs/monitor-manual-TEMPLATE.md) 自行二次开发：
 ~~~python
 from monitor_engine import classify_message, load_config
 config = load_config()
@@ -54,10 +54,9 @@ result = classify_message(message, conversation, config)
 |---|---|---|
 | wechat-export-send | 微信导出、发送适配 | 产出 chat-export/v1；提供 chat-send/v1 |
 | wecom-export | 企微本地采集、导出 | 产出 chat-export/v1 |
-| server-autoops | Linux 任务、健康巡检与告警接入 | 运维侧接入监控与告警；不是消息导出器 |
-| chat-digest | 摘要、报告 | 消费 chat-export/v1，可调用 chat-send/v1 |
-| wechat-wecom-monitor（本仓库） | 增量检查、规则分类、提醒 | 消费 chat-export/v1，可调用 chat-send/v1 或 Bark |
-
+| [server-autoops](https://github.com/rmqg/server-autoops) | 基于 [DeepSeek Harness (`dsh`)](https://github.com/deepseek-ai/deepseek-harness) 巡查整套项目（含消息导出、处理与发送）并按白名单自愈 | 守护各组件容器与服务健康，可选配置 [Bark](https://github.com/Finb/Bark) 通知 |
+| [chat-digest](https://github.com/rmqg/chat-digest) | 每日简报/回顾报告与本机报告网站 | 消费接口 1 (`chat-export/v1`)，调用接口 2 (`chat-send/v1`) |
+| **wechat-wecom-monitor（本仓库）** | 每 10 分钟增量检查、分类与重要消息提醒 | 生产环境配合定时 Agent 每 10 分钟扫描推送；其他推送方案可基于 `classify()` 与接口 1/2 自行开发 |
 仓库通过目录和命令协作，不要求运行在同一个进程。server-autoops 是 Linux 任务、健康巡检与告警接入方，不是数据导出器；此处不约定其具体 CLI。完整导出与发送接口见 [CONTRACT](docs/CONTRACT.md)。
 
 ![监控数据流示意图](assets/monitor-flow.svg)
