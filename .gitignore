@@ -1,0 +1,36 @@
+# 密钥与个人数据：永远不要提交
+all_keys.json
+*keys*.json
+decrypted_db/
+*.db
+*-wal
+*-shm
+# 监控运行数据（真实群名、wxid、消息内容）
+*-seen.json
+wxmon-*.json
+last_check.md
+wecom_last_event.md
+assignments.md
+do_not_report.md
+# 好友关系表（真实姓名/wxid）
+好友关系表.csv
+*好友关系表*
+# 本地配置（填了真实值的）
+monitor-config.json
+群聊监控配置.json
+# 凭据与隧道
+ts_connect.py
+*token*
+*.pem
+*.key
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+demo-output/
+runtime/
+*.sqlite
+*.sqlite3
+.venv/
+*.egg-info/
+watermark.json

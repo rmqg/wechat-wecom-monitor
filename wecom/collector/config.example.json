@@ -1,0 +1,11 @@
+{
+  "data_dir": "C:\\Users\\<你>\\Documents\\WXWork\\<你的企微账号ID>\\Data",
+  "source": "wecom-windows:<你的企微账号ID>",
+  "keys_file": "state/database-keys.private.json",
+  "archive_file": "archive/messages.sqlite3",
+  "media_dir": "archive/media",
+  "state_dir": "state",
+  "export_dir": "exports",
+  "chat_export_dir": "chat-export",
+  "baseline_first_run": true
+}

@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {"id": "group_family", "name": "家庭示例群", "tier": "P0", "authorities": ["acct_parent_example"], "call_when": ["回家", "问事"], "user_card": "示例用户"},
+    {"id": "group_course", "name": "课程示例群", "tier": "P0", "authorities": ["示例老师"], "call_when": ["作业", "签到", "调课", "考核"]},
+    {"id": "group_project", "name": "项目示例群", "tier": "P1", "authorities": ["示例负责人"], "call_when": ["任务", "截止"]},
+    {"id": "group_interest", "name": "兴趣示例群", "tier": "P2", "authorities": [], "call_when": []},
+    {"id": "group_chatter", "name": "闲聊示例群", "tier": "IGNORE", "authorities": [], "call_when": []}
+  ],
+  "key_people": [{"id": "acct_contact_example", "name": "示例关键联系人", "action": "CALL"}],
+  "user": {"ids": ["acct_main_example", "acct_secondary_example"], "aliases": ["示例用户", "示例昵称"]},
+  "rules": {
+    "urgent_keywords": ["紧急", "急事", "立即", "urgent"],
+    "notification_keywords": ["通知", "截止", "作业", "签到", "会议", "安排"],
+    "private": "DIGEST",
+    "mention": "CALL"
+  }
+}

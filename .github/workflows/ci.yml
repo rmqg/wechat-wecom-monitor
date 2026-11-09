@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: 纯标准库安装与离线演示（不安装第三方依赖）
+        env:
+          MONITOR_CONFIG: ${{ runner.temp }}/monitor/config.json
+          STATE_FILE: ${{ runner.temp }}/monitor/seen.json
+        run: |
+          sh install.sh --non-interactive --config examples/install.env.example
+          python bin/wechat-wecom-monitor demo --output "$RUNNER_TEMP/demo"
+          python bin/wechat-wecom-monitor doctor --config "$MONITOR_CONFIG"
+          python bin/wechat-wecom-monitor check --export-root "$RUNNER_TEMP/demo/wechat" --config "$MONITOR_CONFIG" --dry-run
+          python bin/wechat-wecom-monitor check --export-root "$RUNNER_TEMP/demo/wecom" --config "$MONITOR_CONFIG" --dry-run
+      - name: 已跟踪文件隐私审计
+        run: python scripts/audit-release.py
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: 安装测试与可选功能依赖
+        run: python -m pip install -r requirements-dev.txt -r requirements-live.txt -r requirements-files.txt
+      - name: 合成数据测试
+        run: python -m pytest tests wechat/test_file_text.py wecom/collector
+      - name: 隐私审计
+        run: python scripts/audit-release.py

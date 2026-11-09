@@ -1,0 +1,35 @@
+title = "wechat-wecom-monitor public release rules"
+
+[extend]
+useDefault = true
+
+# 与隐私审计补充使用；不保存真实账号、主机名或服务域名作为匹配样本。
+[[rules]]
+id = "chat-account-id"
+description = "公开仓库不得包含真实聊天账号 ID"
+regex = '''\bwxid_[a-z0-9]{6,}\b'''
+
+[[rules]]
+id = "enterprise-account-id"
+description = "公开仓库不得包含企业账号数字标识"
+regex = '''\b168885\d+\b'''
+
+[[rules]]
+id = "windows-user-sid"
+description = "公开仓库不得包含设备用户 SID"
+regex = '''S-1-5-21-\d+(?:-\d+)*'''
+
+[[rules]]
+id = "personal-mail-address"
+description = "公开仓库不得包含私人邮箱"
+regex = '''[A-Za-z0-9._%+-]+@(gmail|qq|163|outlook|hotmail)\.com'''
+
+[[rules]]
+id = "private-network-address"
+description = "公开仓库不得包含私有网络地址"
+regex = '''\b(?:(?:192\.168|10\.\d+|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d+\.\d+)\b'''
+
+# 权威审计本身包含检测表达式，仅排除该检测器；不豁免业务代码或文档。
+[[allowlists]]
+description = "canonical audit detector patterns"
+paths = ['''^scripts/audit-release\.py$''']

@@ -1,0 +1,4 @@
+# 可选：PDF / DOCX / XLSX 附件正文；按需手动安装。
+pypdf>=4,<7
+python-docx>=1.1,<2
+openpyxl>=3.1,<4

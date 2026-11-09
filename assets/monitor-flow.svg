@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="410" viewBox="0 0 1000 410" role="img" aria-labelledby="title desc">
+  <title id="title">本地消息监控数据流示意图</title>
+  <desc id="desc">本地导出器以 chat-export/v1 接入规则分类器，生成 CALL、DIGEST、IGNORE；可选发送通道遵守 chat-send/v1，unknown 不自动重发。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#475569"/></marker></defs>
+  <rect width="1000" height="410" rx="12" fill="#f8fafc"/>
+  <g font-family="sans-serif" fill="#0f172a" text-anchor="middle">
+    <text x="500" y="35" font-size="23" font-weight="bold">本地消息监控 · 示意图</text>
+    <g fill="#e0f2fe" stroke="#0284c7"><rect x="25" y="105" width="210" height="110" rx="10"/><rect x="295" y="105" width="190" height="110" rx="10"/><rect x="545" y="105" width="190" height="110" rx="10"/></g>
+    <g font-size="18"><text x="130" y="143">已授权的本地导出器</text><text x="130" y="177">微信 / 企微 / 其他</text><text x="390" y="143">chat-export/v1</text><text x="390" y="177">私有导出目录</text><text x="640" y="143">独立规则分类器</text><text x="640" y="177">无需 agent</text></g>
+    <g stroke="#475569" stroke-width="2" marker-end="url(#arrow)"><path d="M235 160H285"/><path d="M485 160H535"/><path d="M735 160H785"/></g>
+    <g font-size="17"><rect x="795" y="90" width="180" height="45" rx="8" fill="#fee2e2"/><rect x="795" y="143" width="180" height="45" rx="8" fill="#fef3c7"/><rect x="795" y="196" width="180" height="45" rx="8" fill="#e2e8f0"/><text x="885" y="119">CALL：提醒候选</text><text x="885" y="172">DIGEST：留待汇总</text><text x="885" y="225">IGNORE：不提醒</text></g>
+    <text x="500" y="288" font-size="18">可选提醒：chat-send/v1 / Bark（显式配置目标与授权）</text>
+    <text x="500" y="325" font-size="17">unknown 不自动重发 · dry-run 不发送、不推进消费水位</text>
+    <text x="500" y="367" font-size="16" fill="#475569">真实数据只留本机 · 目录 700 / 文件 600 · 无自动取密钥、无客户端版本保证</text>
+  </g>
+</svg>
